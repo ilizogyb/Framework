@@ -17,8 +17,8 @@ class Application
 		//Подключение реквеста
 		$request = new \Framework\Request\Request;
 		echo $request->getPathInfo();
+		
 		//Включаем процесс роутинга
-		$request = new \Framework\Request\Request;
 		$routes = $this->config['routes'];
 		$router = new \Framework\Router\Router($routes);
 		echo $router->getController().'</br>';
