@@ -2,7 +2,13 @@
 
 namespace Framework\Router;
 
-class Router {
+/**
+* Клас Router являється реалізацією маршрутизатора
+* @autor Lizogyb Igor
+* @since 1.0
+*/
+class Router 
+{
 
 	const DEFAULT_CONTROLLER = "Blog\\Controller\\PostController";
 	const DEFAULT_ACTION     = "index";
@@ -14,12 +20,17 @@ class Router {
 	protected $id            = '';
 	protected $basePath      = "/";
 
-	public function __construct($options) {
+	public function __construct($options)
+	{
 		$this->parseUri($options);
 	}
 	
-	//Получаем URI.
-	protected function getUri() {
+	/** 
+	* Метод для отримання URI
+	* @ return масив з частинами URI
+	*/
+	protected function getUri()
+	{
 		if(!empty($_SERVER['REQUEST_URI'])) {
 			$uri = $_SERVER['REQUEST_URI'];
 			$array_uri = explode('/',$uri);
@@ -27,21 +38,27 @@ class Router {
 		}
 	
 	}
-	//Парсим URI
-	protected function parseUri(array $data_array) {
+	
+	/** 
+	* Метод для розбору URI
+	* 
+	*/
+	protected function parseUri(array $data_array)
+	{
 		$uri_array = $this->getUri();
 		foreach($data_array as $data) {
 			$result = explode('/',$data['pattern']);
-			//Обработка URI вида /
+			
+			//Обробка URI виду /
 			if(strlen($uri_array[1]) === 0) {
 				break;
 			}
-			//Обработка URI вида /resource
-			if(count($uri_array) === 2 && count($result) === 2){
+			//Обробка URI виду /resource
+			if(count($uri_array) === 2 && count($result) === 2) {
 				if($uri_array[1] == $result[1]) {
 					$this->controller = $data['controller'];
 					$this->action = $data['action'];
-					//Обработка вложеных опций
+					//Обообка вкладених опцій
 					if(isset($data['_requirements']) && is_array($data['_requirements']))
 					{
 						foreach($data['_requirements'] as $k=>$v) {
@@ -55,9 +72,9 @@ class Router {
 					}
 				}
 			}
-			//Обработка URI вида /resource/resource1
+			//Обробка URI виду /resource/resource1
 			if(count($uri_array) === 3 && count($result) === 3) {
-				//Проверка URI вида /resource/id
+				//Обробка URI виду /resource/id
 				if (!preg_match_all("/[^\d+$]/", $uri_array[2])){
 					$id = $uri_array[2];
 					$uri_array[2] ='{id}';					
@@ -66,7 +83,7 @@ class Router {
 				if($uri_array[1] == $result[1] && $uri_array[2] == $result[2]) {
 					$this->controller = $data['controller'];
 					$this->action = $data['action'];
-					//Обработка вложеных опций
+					//Обробка вкладених опцій
 					if(isset($data['security']) && is_array($data['security'])) {
 						$this->security = $data['security'][0];
 					}
@@ -80,9 +97,9 @@ class Router {
 					}
 				}
 			}
-			//Обработка URI вида /resource/resource1/resource2
+			//Обробка URI виду /resource/resource1/resource2
 			if(count($uri_array) === 4 && count($result) === 4) {
-				//Проверка URI вида /resource/id
+				//Перевірка URI виду /resource/id
 				if (!preg_match_all("/[^\d+$]/", $uri_array[2])){
 					$id = $uri_array[2];
 					$uri_array[2] ='{id}';					
@@ -91,7 +108,7 @@ class Router {
 				if($uri_array[1] == $result[1] && $uri_array[2] == $result[2] && $uri_array[3] == $result[3]) {
 					$this->controller = $data['controller'];
 					$this->action = $data['action'];
-					//Обработка вложеных опций
+					//Обробка вкладених опцій
 					if(isset($data['security']) && is_array($data['security'])) {
 						$this->security = $data['security'][0];
 					}
@@ -99,7 +116,6 @@ class Router {
 					{
 						foreach($data['_requirements'] as $k=>$v) {
 							if($k === 'id') {
-								//$this->id = $v;
 								$this->id = $id;
 							}
 							if($k === '_method') {
@@ -114,41 +130,73 @@ class Router {
 		}
 	}
 	
-	public function getController() {
+	/**
+	* Отримання контроллера
+	* @return Рядок із значенням контроллера
+	*/
+	public function getController()
+	{
 		return $this->controller;
 	}
 	
-	public function getAction() {
+	/**
+	* Отримання дії
+	* @return Рядок із значенням дії
+	*/	
+	public function getAction()
+	{
 		return $this->action;
 	}
 	
-	public function getMethod() {
+	/**
+	* Отримання методу
+	* @return Рядок із значенням методу або булеве 
+	* значення хибності якщо метод не існує
+	*/
+	public function getMethod()
+	{
 		if(strlen($this->method) > 0)
 			return $this->method;
 		else 
 			return false;
 	}
 	
-	public function getId() {
+	/**
+	* Отримання Id посту
+	* @return Рядок із значенням Id посту або булеве 
+	* значення хибності якщо метод не існує
+	*/	
+	public function getId()
+	{
 		if(strlen($this->id) > 0)
 			return $this->id;
 		else
 			return false;
 	}
 	
-	public function getSecurity() {
+	/**
+	* Отримання властивостей безпеки
+	* @return Рядок із значенням властивостей безпеки або булеве 
+	* значення хибності якщо метод не існує
+	*/
+	public function getSecurity()
+	{
 		if(strlen($this->security) > 0)
 			return $this->security;
 		else
 			return false;
 	}
-
-	function run(){
+	
+	/**
+	* Метод вмикання потрібного контроллера
+	*/
+	function run()
+	{
 		// Подключаем файл контроллера, если он имеется
         $controllerFile = ROOT.'/src/'.$this->controller.'.php';
 		if(file_exists($controllerFile)){
-        //    include($controllerFile);
-		echo $controllerFile;
+        //  include($controllerFile);
+			echo $controllerFile;
         }
 	   
 	}

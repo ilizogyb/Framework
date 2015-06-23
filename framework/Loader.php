@@ -1,19 +1,39 @@
 <?php
+
+use \Framework\Exception\ClassNotFoundException;
+
+/**
+* Реалізація автозавантаження класів
+* @autor Lizogyb Igor
+* @since 1.0
+*/
 class Loader
 {
     // карта для соответствия неймспейса пути в файловой системе
     protected $namespacesMap = array();
    
+    /**
+	* Реєстрація власного автозавантажувача в стек автозавантаження
+	*
+	*/
     public function register()
     {
         spl_autoload_register(array($this,'loadClass'));
     }
-
+	
+    /**
+	* Видалення власного автозавантажувача із стеку автозавантаження
+	*
+	*/
     public function unregister()
     {
         spl_autoload_unregister(array($this, 'loadClass'));    
     }
-
+	
+    /**
+	* Встановлення шляху простору імен
+	* @return булеве значення істиності або хибності в залежності від результату роботи методу
+	*/
     public function addNamespacePath($namespace, $rootDir)
     {
         if (is_dir($rootDir)) {
@@ -24,7 +44,12 @@ class Loader
         
         return false;
     }
-
+	
+    /**
+	* Завантаження потрібного класу
+	* @return булеве значення істиності або хибності в залежності від результату роботи методу
+	* @throws ClassNotFoundException якщо клас не знайдено
+	*/
     protected function loadClass($class)
     {
         $pathParts = explode('\\', $class);
@@ -32,9 +57,15 @@ class Loader
             $namespace = array_shift($pathParts);
             if (!empty($this->namespacesMap[$namespace])) {
                 $filePath = $this->namespacesMap[$namespace] . '/' . implode('/', $pathParts) . '.php';
-				require_once $filePath;
-                return true;            
-            }
+				if(file_exists($filePath)) {
+					require_once $filePath;
+				} else {
+					throw new ClassNotFoundException($class.' not found in : '.$filePath);
+				}
+                return true;
+            } else {
+				
+			}
         }
         return false;
     }
