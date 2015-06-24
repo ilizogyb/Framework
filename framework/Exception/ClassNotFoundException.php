@@ -12,6 +12,7 @@ class ClassNotFoundException extends \Exception
 	protected $message;
 	protected $code;
 	private $previous;
+	
 	//Перевизначення виключення
 	public function __construct($message = null, $code = 0, Exception $previous = null)
 	{

@@ -164,7 +164,7 @@ class Request
     
     /**
     * Метод встановлює шлях в запиті
-    * @param рядок зі шляхом який необхідно встановити
+    * @param string $value рядок зі шляхом який необхідно встановити
     *
     */
     public function setPathInfo($value)
@@ -174,9 +174,9 @@ class Request
     
     /**
     * Метод повертає параметри із запиту
-    * @param $key рядок із ключем для пошуку
-    * @param $default значення параметра
-    * @param $type тип параметра 
+    * @param string $key рядок із ключем для пошуку
+    * @param string $default значення параметра
+    * @param string $type тип параметра 
     */
     public function get($key, $default = null, $type = null) {
         if (isset($this->_part[$key])) {
@@ -201,7 +201,7 @@ class Request
 
     /**
     * Метод перевіряє наявність параметрів в запиті
-    * @param $key рядок із ключем для пошуку
+    * @param string $key рядок із ключем для пошуку
     *
     */
     public function has($key) {

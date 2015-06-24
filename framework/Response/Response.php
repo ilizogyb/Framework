@@ -80,14 +80,14 @@ class Response
     ];
     
     private $_statusCode = 200;
-    private $_headers;
+    private $_headers = array('content-type' => 'text/html');
     public $content;
     public $statusText = 'OK';
     public $version;
+	public $body = null;
 		
     public function __construct()
 	{
-		echo "Response Run<br>";
 		if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.0') {
 			$this->version = '1.0';
         } else {
@@ -95,11 +95,20 @@ class Response
         }
 	}
 	
+	/**
+	* Метод для отримання статус-коду Response
+	* @return рядок із значенням статус-коду
+	*/
     public function getStatusCode()
     {
         return $this->_statusCode;
     }
-    
+	
+	/**
+	* Метод для встановлення статус-коду Response
+	* @param string $value значення статус-коду
+	* @param string $text текст статус-коду
+	*/
     public function setStatusCode($value, $text = null)
     {
 		if ($value === null) {
@@ -114,14 +123,39 @@ class Response
 		}
 	}
 	
-    public function getHeaders()
+	/**
+	* Метод для отримання заголовку Response
+	* @param string $name рядок з іменем заголовку
+	* @return рядок із значенням заголовку
+	*/
+	public function getHeader($name)
+    {
+        $name = strtolower($name[0].preg_replace('/([A-Z])/', '-$1', substr($name, 1)));
+        return isset($this->_headers[$name]) ? $this->_headers[$name] : NULL;
+    }
+	
+	/**
+	* Метод для встановлення заголовку Response
+	* @param string $name ім'я заголовку
+	* @param string $value значення заголовку
+	*/
+	public function setHeader($name, $value)
+    {
+		$name = strtolower($name[0].preg_replace('/([A-Z])/', '-$1', substr($name, 1)));
+        $this->_headers[strtolower(preg_replace('/([A-Z])/', '-$1', $name))] = $value;
+    }
+	
+	/**
+	* Метод для отримання усіх існуючих заголовків Response
+	* @return  масив існючих заголовків
+	*/
+	public function getHeaders()
     {
 		return $this->_headers;
 	}
-	
-    public function setHeader($header) {
-        $this->_headers[] = $header;
-    }
+
+
+
 
 }
 ?>

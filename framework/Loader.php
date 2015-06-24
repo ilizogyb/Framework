@@ -9,7 +9,7 @@ use \Framework\Exception\ClassNotFoundException;
 */
 class Loader
 {
-    // карта для соответствия неймспейса пути в файловой системе
+    //карта для відповідності неймспейсу шляху в файловій системі
     protected $namespacesMap = array();
    
     /**
@@ -32,6 +32,8 @@ class Loader
 	
     /**
 	* Встановлення шляху простору імен
+	* @param string $namespace рядок із значенням простору імен
+	* @param string $rootDir рядок із значенням шляху
 	* @return булеве значення істиності або хибності в залежності від результату роботи методу
 	*/
     public function addNamespacePath($namespace, $rootDir)
@@ -47,6 +49,7 @@ class Loader
 	
     /**
 	* Завантаження потрібного класу
+	* @param string $class ім'я класу для завантаження
 	* @return булеве значення істиності або хибності в залежності від результату роботи методу
 	* @throws ClassNotFoundException якщо клас не знайдено
 	*/
@@ -69,6 +72,5 @@ class Loader
         }
         return false;
     }
-    
 }
 

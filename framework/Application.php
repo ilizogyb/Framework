@@ -41,8 +41,9 @@ class Application
 		
 		//Тестування виклику методів
 		echo $request->getPathInfo().'<br>';
-		echo $response->getStatusCode().'<br>';
-		
+		$response->setHeader('Test', 'Testovuy');
+		print_r($response->getHeaders());
+				
 		//Запуск процесу маршрутизації
 		$routes = $this->config['routes'];
 		$router = new Router($routes);

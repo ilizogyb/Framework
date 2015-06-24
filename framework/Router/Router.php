@@ -41,7 +41,8 @@ class Router
 	
 	/** 
 	* Метод для розбору URI
-	* 
+	* @param array $data_array масив з конфігурацією маршрутів та їх
+	* властивостей(параметрів)
 	*/
 	protected function parseUri(array $data_array)
 	{
