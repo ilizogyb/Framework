@@ -9,10 +9,44 @@ use \Framework\Exception\ClassNotFoundException;
 */
 class Loader
 {
+	/**
+    * Статична змінна в якій ми будемо зберігати
+    * Екзаемпляр класу
+    *
+    */
+    protected static $_instance;
+	
     //карта для відповідності неймспейсу шляху в файловій системі
     protected $namespacesMap = array();
-   
+    
+	/**
+    * Закриваємо доступ до функції поза класом.
+    *
+    */
+	private function __construct(){}
+	
+	/**
+    * Закриваємо доступ до функції поза класом.
+    *
+    */
+	private function __clone(){}
+    
     /**
+    * Статична функція, яка повертає
+    * екземпляр класу або створює новий за
+    * необхідності
+    *
+    * @return Loader
+    */
+	public static function getInstance()
+	{
+		if(null === self::$_instance) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
+	}
+	
+	/**
 	* Реєстрація власного автозавантажувача в стек автозавантаження
 	*
 	*/

@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__.'/../framework/Loader.php');
 
-$loader = new Loader();
+$loader = Loader::getInstance();
 $loader->addNamespacePath('Blog\\',__DIR__.'/../src/Blog');
 $loader->addNamespacePath('Framework\\',__DIR__.'/../framework');
 $loader->register();

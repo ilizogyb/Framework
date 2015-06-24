@@ -40,19 +40,19 @@ class Application
 		$response = new Response;
 		
 		//Тестування виклику методів
-		echo $request->getPathInfo().'<br>';
-		$response->setHeader('Test', 'Testovuy');
-		print_r($response->getHeaders());
+		//echo $request->getPathInfo().'<br>';
+		//$response->setHeader('Test', 'Testovuy');
+		//print_r($response->getHeaders());
 				
 		//Запуск процесу маршрутизації
 		$routes = $this->config['routes'];
 		$router = new Router($routes);
 		
-		echo $router->getController().'</br>';
-		echo $router->getAction().'</br>';
-		echo $router->getMethod().'</br>';
-		echo $router->getId().'</br>';
-		echo $router->getSecurity().'</br>';
+		//echo $router->getController().'</br>';
+		//echo $router->getAction().'</br>';
+		//echo $router->getMethod().'</br>';
+		//echo $router->getId().'</br>';
+		//echo $router->getSecurity().'</br>';
 	}
 
 
