@@ -41,7 +41,7 @@ class Router
 	
 	/** 
 	* Метод для розбору URI
-	* @param array $data_array масив з конфігурацією маршрутів та їх
+	* @param string $data_array масив з конфігурацією маршрутів та їх
 	* властивостей(параметрів)
 	*/
 	protected function parseUri(array $data_array)
@@ -133,7 +133,7 @@ class Router
 	
 	/**
 	* Отримання контроллера
-	* @return Рядок із значенням контроллера
+	* @return string рядок із значенням контроллера
 	*/
 	public function getController()
 	{
@@ -142,7 +142,7 @@ class Router
 	
 	/**
 	* Отримання дії
-	* @return Рядок із значенням дії
+	* @return string рядок із значенням дії
 	*/	
 	public function getAction()
 	{
@@ -151,7 +151,7 @@ class Router
 	
 	/**
 	* Отримання методу
-	* @return Рядок із значенням методу або булеве 
+	* @return string рядок із значенням методу або булеве 
 	* значення хибності якщо метод не існує
 	*/
 	public function getMethod()
@@ -164,7 +164,7 @@ class Router
 	
 	/**
 	* Отримання Id посту
-	* @return Рядок із значенням Id посту або булеве 
+	* @return string рядок із значенням Id посту або булеве 
 	* значення хибності якщо метод не існує
 	*/	
 	public function getId()
@@ -177,7 +177,7 @@ class Router
 	
 	/**
 	* Отримання властивостей безпеки
-	* @return Рядок із значенням властивостей безпеки або булеве 
+	* @return string рядок із значенням властивостей безпеки або булеве 
 	* значення хибності якщо метод не існує
 	*/
 	public function getSecurity()

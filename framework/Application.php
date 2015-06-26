@@ -39,10 +39,26 @@ class Application
 		$request = new Request;
 		$response = new Response;
 		
-		//Тестування виклику методів
-		//echo $request->getPathInfo().'<br>';
-		//$response->setHeader('Test', 'Testovuy');
-		//print_r($response->getHeaders());
+		//Тестування виклику методів Response
+		$response->setStatusCode(200,'OK');
+		$response->setHeader('Content-Type','text/html; charset=UTF-8');
+		$response->setCookie('test','Hello from framework',3600);
+		$response->setContent('<h2>Тест встановлення куків</h2>');
+		$response->setContent("<h3><script>document.write(document.cookie);</script></h3>");
+		$response->setContent('<h2>Тест роботи з запитами</h2>');
+		$response->setContent("<form action='' method='POST'><input type='text' name='user'><input type='submit' value='Send'></from>");
+		//echo $response->__toString();
+		$response->send();
+
+		//Тестування виклику Request
+		echo '<br>Шлях: ';
+		echo $request->getPathInfo().'<br>';
+		echo 'Метод: ' . $request->getMethod().'<br>';
+		echo 'Ключі та параметри запиту: <br>';
+		print_r($request->getQueryParams());
+		echo '<br>Ключі запиту: <br>';
+		print_r($request->getQueryParamKeys());
+		echo '<br> GET для ?а = ' . $request->getQueryParam('a');
 				
 		//Запуск процесу маршрутизації
 		$routes = $this->config['routes'];

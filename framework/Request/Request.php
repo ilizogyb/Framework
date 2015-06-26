@@ -47,7 +47,7 @@ class Request
 
     /*
     *Метод повертає істину, якщо тип запиту POST
-    *@return булеве значення, в залежності від типу запиту 
+    *@return boolean булеве значення, в залежності від типу запиту 
     *
     */
     public function isPost()
@@ -57,7 +57,7 @@ class Request
 
     /**
     * Метод повертає істину, якщо тип запиту GET
-    * @return булеве значення, в залежності від типу запиту 
+    * @return boolean булеве значення, в залежності від типу запиту 
     *
     */
     public function isGet()
@@ -67,7 +67,7 @@ class Request
 
     /**
     * Метод повертає істину, якщо тип запиту PUT
-    * @return булеве значення, в залежності від типу запиту 
+    * @return boolean булеве значення, в залежності від типу запиту 
     *
     */
     public function isPut()
@@ -77,7 +77,7 @@ class Request
 
     /**
     * Метод повертає істину, якщо тип запиту DELETE
-    * @return булеве значення, в залежності від типу запиту 
+    * @return boolean булеве значення, в залежності від типу запиту 
     *
     */
     public function IsDelete()
@@ -87,21 +87,71 @@ class Request
     
     /**
     * Метод повертає масив із параметрами запиту
-    * @return масив з параметрами запиту, якщо вони наявні або булеве значення хибності
+    * @return string масив з параметрами запиту, 
+    * якщо вони наявні або булеве значення хибності
     *
     */
-    public function getQueryParam()
+    public function getQueryParams()
     {
-        if(count($_GET) > 0) {
-            return $_GET;
-        } else {
-            return false;        
-        }
+        if($this->isGet()) {
+		    if(count($_GET) > 0) {
+                return $_GET;
+            } else {
+                return false;        
+            }
+		}
+		if($this->isPost()) {
+		    if(count($_POST) > 0) {
+                return $_POST;
+            } else {
+               return false;        
+            }
+		}
     }
-    
+	
+	/**
+    * Метод повертає масив із ключами параметрів запиту
+    * @return string масив з ключами параметрів запиту, 
+    *
+    */
+	public function getQueryParamKeys()
+    {
+		if($this->isGet()) {
+			return array_keys($_GET);
+		}
+		if($this->isPost()) {
+			return array_keys($_POST);
+		}
+    }
+    /**
+    * Метод для отримання певного параметру із запиту
+    * @param string $name  рядок із назвою параметра 
+    * @return string рядок із значенням параметра запиту, 
+    * якщо він наявний або булеве значення хибності
+    *
+    */
+    public function getQueryParam($name)
+    {
+        if($this->isGet()) {		
+            if(count($_GET) > 0 && strlen($name) > 0) {
+			    if(array_key_exists($name, $_GET)) 
+				    return $_GET[$name];
+            } else {
+                return false;        
+            }
+        }
+        if($this->isPost()) {
+		    if(count($_POST) > 0 && strlen($name) > 0) {
+			    if(array_key_exists($name, $_POST)) 
+				    return $_POST[$name];
+            } else {
+                return false;        
+            }	
+		}			
+	}
     /**
     * Метод повертає рядок з типом захисту 
-    * @return рядок http або https
+    * @return string рядок http або https
     *
     */
     public function getHostSecure()
@@ -118,7 +168,7 @@ class Request
     
     /**
     * Метод повертає рядок з інформацією про хост 
-    * @return рядок з інформацією про хост
+    * @return string рядок з інформацією про хост
     *
     */
     public function getHostInfo()
@@ -131,7 +181,7 @@ class Request
 
     /**
     * Метод повертає порт сервера 
-    * @return ціле число порт сервера
+    * @return int ціле число порт сервера
     *
     */
     public function getServerPort()
@@ -141,7 +191,7 @@ class Request
 
     /**
     * Метод повертає базовий уніфікований локатор 
-    * @return рядок уніфікований локатор
+    * @return string рядок уніфікований локатор
     *
     */
     public function getBaseUrl()
@@ -152,7 +202,7 @@ class Request
 
     /**
     * Метод повертає дані про шлях в запрошеному URL
-    * @return рядок зі шляхом
+    * @return string рядок зі шляхом
     *
     */
     public function getPathInfo()
@@ -210,7 +260,7 @@ class Request
 
     /**
     * Метод перевіряє чи запит являється запитом Ajax
-    * @return булеве значення істиності того що запит є запитом Ajax
+    * @return boolean булеве значення істиності того що запит є запитом Ajax
     *
     */
     public function isAjax() {
