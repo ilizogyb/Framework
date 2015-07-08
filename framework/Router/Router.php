@@ -2,6 +2,8 @@
 
 namespace Framework\Router;
 
+use \Framework\Request\Request;
+
 /**
 * Клас Router являється реалізацією маршрутизатора
 * @autor Lizogyb Igor
@@ -14,15 +16,17 @@ class Router
 	const DEFAULT_ACTION     = "index";
 	
 	protected $controller    = self::DEFAULT_CONTROLLER;
-    protected $action        = self::DEFAULT_ACTION;
+    protected $action        = array();
 	protected $method        = '';
 	protected $security      = '';
 	protected $id            = '';
 	protected $basePath      = "/";
+    protected $path          = '';
 
-	public function __construct($options)
+	public function __construct(Request $req, $options)
 	{
-		$this->parseUri($options);
+		$this->path = $req->getPathInfo();
+        $this->parseUri($options);
 	}
 	
 	/** 
@@ -31,34 +35,34 @@ class Router
 	*/
 	protected function getUri()
 	{
-		if(!empty($_SERVER['REQUEST_URI'])) {
-			$uri = $_SERVER['REQUEST_URI'];
-			$array_uri = explode('/',$uri);
-			return $array_uri;
-		}
-	
+        return explode('/',$this->path);
 	}
 	
 	/** 
 	* Метод для розбору URI
-	* @param string $data_array масив з конфігурацією маршрутів та їх
+	* @param array $data_array масив з конфігурацією маршрутів та їх
 	* властивостей(параметрів)
 	*/
 	protected function parseUri(array $data_array)
 	{
 		$uri_array = $this->getUri();
-		foreach($data_array as $data) {
-			$result = explode('/',$data['pattern']);
-			
+		
+        foreach($data_array as $data) {
+          $result = ltrim($data['pattern'],'/');
+          $result = explode('/', $result);
+
 			//Обробка URI виду /
-			if(strlen($uri_array[1]) === 0) {
+			if(strlen($uri_array[0]) === 0) {
+                $this->controller = self::DEFAULT_CONTROLLER;
+                array_push($this->action,self::DEFAULT_ACTION);
 				break;
 			}
-			//Обробка URI виду /resource
-			if(count($uri_array) === 2 && count($result) === 2) {
-				if($uri_array[1] == $result[1]) {
+            
+            //Обробка URI виду /resource
+			if(count($uri_array) === 1 && count($result) === 1) {
+				if($uri_array[0] == $result[0]) {
 					$this->controller = $data['controller'];
-					$this->action = $data['action'];
+					array_push($this->action, $data['action']);
 					//Обообка вкладених опцій
 					if(isset($data['_requirements']) && is_array($data['_requirements']))
 					{
@@ -73,62 +77,70 @@ class Router
 					}
 				}
 			}
-			//Обробка URI виду /resource/resource1
-			if(count($uri_array) === 3 && count($result) === 3) {
-				//Обробка URI виду /resource/id
-				if (!preg_match_all("/[^\d+$]/", $uri_array[2])){
-					$id = $uri_array[2];
-					$uri_array[2] ='{id}';					
-				}
+            
+            //Обробка URI виду /resource/resource1
+			if(count($uri_array) === 2 && count($result) === 2) {
+                if($uri_array[0] == $result[0]) {
+                    if (!preg_match_all("/[^\d+$]/", $uri_array[1])) {
+                        $id = $uri_array[1];
+                        $uri_array[1] ='{id}';
+                    } 
+                    
+                    if($uri_array[1] == $result[1]) {
+                       
+                       $this->controller = $data['controller'];
+					   array_push($this->action, $data['action']);
 
-				if($uri_array[1] == $result[1] && $uri_array[2] == $result[2]) {
-					$this->controller = $data['controller'];
-					$this->action = $data['action'];
-					//Обробка вкладених опцій
-					if(isset($data['security']) && is_array($data['security'])) {
-						$this->security = $data['security'][0];
-					}
-					if(isset($data['_requirements']) && is_array($data['_requirements']))
-					{
-						foreach($data['_requirements'] as $k=>$v) {
-							if($k === 'id') {
+                        //Обробка вкладених опцій
+					    if(isset($data['security']) && is_array($data['security'])) {
+						    $this->security = $data['security'][0];
+					    }
+                        
+                        if(isset($data['_requirements']) && is_array($data['_requirements']))
+                        {
+                            foreach($data['_requirements'] as $k=>$v) {
+                                if($k === 'id') {
 								$this->id = $id;
-							}
-						}
-					}
-				}
-			}
-			//Обробка URI виду /resource/resource1/resource2
-			if(count($uri_array) === 4 && count($result) === 4) {
-				//Перевірка URI виду /resource/id
-				if (!preg_match_all("/[^\d+$]/", $uri_array[2])){
-					$id = $uri_array[2];
-					$uri_array[2] ='{id}';					
-				}
-				
-				if($uri_array[1] == $result[1] && $uri_array[2] == $result[2] && $uri_array[3] == $result[3]) {
-					$this->controller = $data['controller'];
-					$this->action = $data['action'];
-					//Обробка вкладених опцій
-					if(isset($data['security']) && is_array($data['security'])) {
-						$this->security = $data['security'][0];
-					}
-					if(isset($data['_requirements']) && is_array($data['_requirements']))
-					{
-						foreach($data['_requirements'] as $k=>$v) {
-							if($k === 'id') {
-								$this->id = $id;
-							}
-							if($k === '_method') {
-								$this->method = $v;
-							}
-						}
-					}
-				}
-			}
-				
-			
-		}
+                                }
+                            }
+                        }
+                    } 
+                }                
+            }
+            
+            //Обробка URI виду /resource/resource1/resource2
+			if(count($uri_array) === 3 && count($result) === 3) {
+                if($uri_array[0] == $result[0]) {
+                    if (!preg_match_all("/[^\d+$]/", $uri_array[1])) {
+                        $id = $uri_array[1];
+                        $uri_array[1] ='{id}';
+                    }
+                    
+                    if($uri_array[0] == $result[0] && $uri_array[1] == $result[1] && $uri_array[2] == $result[2]) {
+                        $this->controller = $data['controller'];
+					    array_push($this->action, $data['action']);
+					    //Обробка вкладених опцій
+                        if(isset($data['_requirements']) && is_array($data['_requirements']))
+                        {
+                            foreach($data['_requirements'] as $k=>$v) {
+                                if($k === 'id') {
+                                    $this->id = $id;
+                                }
+                                if($k === '_method') {
+                                    $this->method = $v;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        //Якщо не відбулось співпадань
+        if(is_array($this->action) && empty($this->action)){
+           $this->controller = self::DEFAULT_CONTROLLER;
+           array_push($this->action, self::DEFAULT_ACTION);
+        }
 	}
 	
 	/**
@@ -142,7 +154,7 @@ class Router
 	
 	/**
 	* Отримання дії
-	* @return string рядок із значенням дії
+	* @return string масив з рядками із значенням дій
 	*/	
 	public function getAction()
 	{
@@ -164,7 +176,7 @@ class Router
 	
 	/**
 	* Отримання Id посту
-	* @return string рядок із значенням Id посту або булеве 
+	* @return  string рядок із значенням Id посту або булеве 
 	* значення хибності якщо метод не існує
 	*/	
 	public function getId()
