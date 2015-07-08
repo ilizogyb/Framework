@@ -5,6 +5,7 @@ use \Framework\Request\Request;
 use \Framework\Response\Response;
 use \Framework\Router\Router;
 use \Framework\Exception\ClassNotFoundException;
+use \Framework\Session\Session;
 
 /**
 * Application головний клас додатку
@@ -62,7 +63,17 @@ class Application
 				
 		//Запуск процесу маршрутизації
 		$routes = $this->config['routes'];
-		$router = new Router($routes);
+		$router = new Router($request, $routes);
+        
+        //Тест роботи з сесією
+        $session = new Session('userTest');
+        echo $session->start();
+        $session->write('igor','Test');
+        $session->shutdown();
+        $session->start();
+        echo "Session Value: " . $session->read('igor');
+        echo '</br>';
+        echo "Session ID: " . $session->getSessionId();
 		
 		//echo $router->getController().'</br>';
 		//echo $router->getAction().'</br>';
