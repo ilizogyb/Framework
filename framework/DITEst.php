@@ -8,6 +8,7 @@ class DITEst
     {
         echo "<br><br>DI TEST Successed!<br>";
     }
+    
     public function getText()
     {
         echo "<br>DI Test status: OK!<br>";
