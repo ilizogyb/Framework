@@ -5,7 +5,7 @@ use \Framework\Request\Request;
 use \Framework\Response\Response;
 use \Framework\Router\Router;
 use \Framework\Session\Session;
-use \Framework\DI\Container;
+use \Framework\DI\Service;
 use \Framework\DI\ServiceLocator;
 use \Framework\Exception\ClassNotFoundException;
 use \Framework\Exception\FrameworkException;
@@ -98,18 +98,17 @@ class Application
         echo '</br>';
         echo "Session ID: " . $session->getSessionId();
         //DI Tests 
-        $container = new Container(); 
         
         //aliase
-         //$container->set('test','Framework\DITEst');
-         $container->set('test',function(){
+         //Service::set('test','Framework\DITEst');
+         Service::set('test',function(){
              $obj = new DITEst;
              return $obj;
          });
-         $container->get('test');
+         Service::get('test');
         /*
-        $container->set('Framework\DITEst');
-        $test = $container->get('Framework\DITEst');
+        Service::set('Framework\DITEst');
+        $test = Service::get('Framework\DITEst');
         $test->getText();
         */
  
