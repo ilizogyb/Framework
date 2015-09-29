@@ -3,6 +3,7 @@
 namespace Framework\Router;
 
 use \Framework\Request\Request;
+use \Framework\Exception\ClassNotFoundException;
 
 /**
 * Клас Router являється реалізацією маршрутизатора
@@ -12,7 +13,7 @@ use \Framework\Request\Request;
 class Router 
 {
 
-	const DEFAULT_CONTROLLER = "Blog\\Controller\\PostController";
+    const DEFAULT_CONTROLLER = "Blog\\Controller\\PostController";
 	const DEFAULT_ACTION     = "index";
 	
 	protected $controller    = self::DEFAULT_CONTROLLER;
@@ -22,20 +23,28 @@ class Router
 	protected $id            = '';
 	protected $basePath      = "/";
     protected $path          = '';
+    protected $options       = array();
 
 	public function __construct(Request $req, $options)
 	{
 		$this->path = $req->getPathInfo();
+        $this->options = $options;
         $this->parseUri($options);
 	}
 	
+    public function setUri(Request $req)
+	{
+        $this->path = $req->getPathInfo();
+        $this->parseUri($this->options);
+	}
+    
 	/** 
 	* Метод для отримання URI
 	* @ return масив з частинами URI
 	*/
 	protected function getUri()
 	{
-        return explode('/',$this->path);
+        return explode('/', $this->path);
 	}
 	
 	/** 
@@ -205,13 +214,14 @@ class Router
 	*/
 	function run()
 	{
-		// Подключаем файл контроллера, если он имеется
-        $controllerFile = ROOT.'/src/'.$this->controller.'.php';
-		if(file_exists($controllerFile)){
-        //  include($controllerFile);
-			echo $controllerFile;
-        }
-	   
+        
+        $controllerPath =  $_SERVER['DOCUMENT_ROOT'] .'/src/' . $this->controller.'.php';
+		if(file_exists($controllerPath)){
+          include($controllerPath);
+			echo $controllerPath;
+        } else {
+            throw new ClassNotFoundException($this->controller.' not found in : '.$controllerPath);
+	    }
 	}
 }
 

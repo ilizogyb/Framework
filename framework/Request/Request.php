@@ -15,8 +15,9 @@ class Request
     private $_part = array();
 
     public function __construct($url = null)
-    {   
-        $url = $_SERVER['REQUEST_URI'];
+    {   if($url === null) {
+            $url = $_SERVER['REQUEST_URI'];
+        }
         $this->_url = urldecode($url);
         $this->_part = array();
         foreach (explode('/', $this->_url) as $k => $v) {
@@ -135,7 +136,7 @@ class Request
         if($this->isGet()) {		
             if(count($_GET) > 0 && strlen($name) > 0) {
 			    if(array_key_exists($name, $_GET)) 
-				    return $_GET[$name];
+                    return $this->filter($_GET[$name]);
             } else {
                 return false;        
             }
@@ -143,7 +144,7 @@ class Request
         if($this->isPost()) {
 		    if(count($_POST) > 0 && strlen($name) > 0) {
 			    if(array_key_exists($name, $_POST)) 
-				    return $_POST[$name];
+                    return $this->filter($_POST[$name]);
             } else {
                 return false;        
             }	
@@ -222,30 +223,30 @@ class Request
         $this->_pathInfo = ltrim($value, '/');
     }
     
+    
     /**
-    * Метод повертає параметри із запиту
+    * Метод повертає параметри із запиту методом GET
     * @param string $key рядок із ключем для пошуку
     * @param string $default значення параметра
-    * @param string $type тип параметра 
-    */
-    public function get($key, $default = null, $type = null) {
-        if (isset($this->_part[$key])) {
-            if ($type) {
-                if (!is_array($type)) {
-                    return call_user_func_array(array('Type', 'to'.ucfirst($type)), array($this->_part[$key]));
-                } else {
-                    return call_user_func_array(array('Type', 'to'.ucfirst($type[0])), array($this->_part[$key])+$type[1]);
-                }
-            } else {
-                return $this->_part[$key];
-
-            }
-        } else {
-            if (is_object($default) && $default instanceof Exception) {
-                throw $default;
-            } else {
-                return $default;
-            }
+    */  
+    public function get($key,$default = null) 
+    {
+        if($this->isGet()) {
+           $result = isset($_GET[$key]) ? $this->filter($_GET[$key]) : $default;
+           return $result;
+        }
+    }
+    
+    /**
+    * Метод повертає параметри із запиту методом POST
+    * @param string $key рядок із ключем для пошуку
+    * @param string $default значення параметра
+    */   
+    public function post($key, $default = null)
+    {
+        if($this->isPost()) {
+            $result = isset($_POST[$key]) ? $this->filter($_POST[$key]) : $default;
+            return $result;
         }
     }
 
@@ -264,14 +265,35 @@ class Request
     *
     */
     public function isAjax() {
-        if ($this->get('ajax') == 1) {
-            return true;
-        } elseif (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
                 && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
             return true;
         } else {
             return false;
         }
+    }
+    
+    /*public function getRequest($uri)
+    {
+        return new Request($uri);
+    }*/
+    
+    /**
+    * Метод виконує фільтрацію вхідних даних запиту
+    * @param string $value вхідні данні для фільтрації
+    * @return string $text відфільтровані дані 
+    *
+    */
+    protected function filter($value)
+    {
+        if (strlen($value)){
+            $text = trim($value);
+            $text = preg_replace("/[^a-zа-я0-9\., _\n]/i", "", $text);
+            $text = htmlspecialchars($text);
+        } else {
+            return false;
+        }
+        return $text;
     }
 }
 ?>

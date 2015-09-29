@@ -77,7 +77,6 @@ class Loader
             $this->namespacesMap[$namespace] = $rootDir;
             return true;
         }
-        
         return false;
     }
 	
