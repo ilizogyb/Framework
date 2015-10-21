@@ -147,12 +147,15 @@ class Render {
         };
         
         $generateToken = function(){
-            return "123";
+            return md5(uniqid(rand(),1));
         };
 
         $user = Service::get('session')->read('user');
-        $flush = "Test flush";
-        
+
+        $flush = (Service::get('session')->read('flush')) ? (Service::get('session')->read('flush')) : array();
+        Service::get('session')->del('flush');
+        //question about content
+        $content = "content in progress...";
         //старт буферизація виводу
         ob_start();
         //вимкнення неявного очищення буфера після кожного виводу
