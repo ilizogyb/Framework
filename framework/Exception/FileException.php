@@ -1,7 +1,4 @@
 <?php
-
-namespace Framework\Exception;
-
 /**
  * FileException викидається коли виникає помилка 
  * при завантаженні файлів і роботі з ними
@@ -10,6 +7,9 @@ namespace Framework\Exception;
  * @author     Lizogyb Igor
  * @version    1.0
  */
+ 
+namespace Framework\Exception;
+
 class FileException extends FrameworkException
 {
 }

@@ -32,7 +32,18 @@ use ReflectionClass;
  
 class Service
 {
+    private static $instance = null;
     private static $_definitions = [];
+
+    private function __construct(){ }
+    protected function __clone(){ }
+
+    public static function getInstance(){
+        if (is_null(self::$instance)) {
+            self::$instance = new Service();
+        }
+        return self::$instance;
+    }
 
     /**
      * Метод реєструє опис класу для контейнера
@@ -83,7 +94,7 @@ class Service
      * @return object інстанс потрібного класу
      */
     public static function get($class)
-    {
+    { 
         if (!isset(self::$_definitions[$class])) {
             return self::build($class);
         }
@@ -130,7 +141,6 @@ class Service
     protected static function build($class)
     {
         list ($dependencies, $reflection) = self::getDependencies($class);
-        
         return $reflection->newInstanceArgs($dependencies);
     }
 }

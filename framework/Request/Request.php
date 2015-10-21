@@ -1,12 +1,12 @@
 <?php 
-
-namespace Framework\Request;
-
 /**
  * Клас Request являється HTTP запитом
  * @author Igor Lizogyb 
  * @since 1.0
  */
+ 
+namespace Framework\Request;
+
 class Request 
 {
     private $_hostInfo;
@@ -33,10 +33,10 @@ class Request
     }
 
     /**
-    * Повертає метод поточного запиту GET, POST, HEAD, PUT, DELETE
-    * @return Метод повертає рядок, наприклад, GET, POST, HEAD, PUT, DELETE.
-    * Значення, що повертається перетворився у верхньому регістрі.
-    */
+     * Повертає метод поточного запиту GET, POST, HEAD, PUT, DELETE
+     * @return Метод повертає рядок, наприклад, GET, POST, HEAD, PUT, DELETE.
+     * Значення, що повертається перетворився у верхньому регістрі.
+     */
     public function getMethod()
     {
         if (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
@@ -47,51 +47,51 @@ class Request
     }
 
     /*
-    *Метод повертає істину, якщо тип запиту POST
-    *@return boolean булеве значення, в залежності від типу запиту 
-    *
-    */
+     *Метод повертає істину, якщо тип запиту POST
+     *@return boolean булеве значення, в залежності від типу запиту 
+     *
+     */
     public function isPost()
     {
         return $this->getMethod() === 'POST';
     }
 
     /**
-    * Метод повертає істину, якщо тип запиту GET
-    * @return boolean булеве значення, в залежності від типу запиту 
-    *
-    */
+     * Метод повертає істину, якщо тип запиту GET
+     * @return boolean булеве значення, в залежності від типу запиту 
+     *
+     */
     public function isGet()
     {
         return $this->getMethod() === 'GET';
     }
 
     /**
-    * Метод повертає істину, якщо тип запиту PUT
-    * @return boolean булеве значення, в залежності від типу запиту 
-    *
-    */
+     * Метод повертає істину, якщо тип запиту PUT
+     * @return boolean булеве значення, в залежності від типу запиту 
+     *
+     */
     public function isPut()
     {
         return $this->getMethod() === 'PUT';
     }
 
     /**
-    * Метод повертає істину, якщо тип запиту DELETE
-    * @return boolean булеве значення, в залежності від типу запиту 
-    *
-    */
+     * Метод повертає істину, якщо тип запиту DELETE
+     * @return boolean булеве значення, в залежності від типу запиту 
+     *
+     */
     public function IsDelete()
     {
         return $this->getMethod() === 'DELETE';
     }
     
     /**
-    * Метод повертає масив із параметрами запиту
-    * @return string масив з параметрами запиту, 
-    * якщо вони наявні або булеве значення хибності
-    *
-    */
+     * Метод повертає масив із параметрами запиту
+     * @return string масив з параметрами запиту, 
+     * якщо вони наявні або булеве значення хибності
+     *
+     */
     public function getQueryParams()
     {
         if($this->isGet()) {
@@ -111,10 +111,10 @@ class Request
     }
 	
 	/**
-    * Метод повертає масив із ключами параметрів запиту
-    * @return string масив з ключами параметрів запиту, 
-    *
-    */
+     * Метод повертає масив із ключами параметрів запиту
+     * @return string масив з ключами параметрів запиту, 
+     *
+     */
 	public function getQueryParamKeys()
     {
 		if($this->isGet()) {
@@ -125,12 +125,12 @@ class Request
 		}
     }
     /**
-    * Метод для отримання певного параметру із запиту
-    * @param string $name  рядок із назвою параметра 
-    * @return string рядок із значенням параметра запиту, 
-    * якщо він наявний або булеве значення хибності
-    *
-    */
+     * Метод для отримання певного параметру із запиту
+     * @param string $name  рядок із назвою параметра 
+     * @return string рядок із значенням параметра запиту, 
+     * якщо він наявний або булеве значення хибності
+     *
+     */
     public function getQueryParam($name)
     {
         if($this->isGet()) {		
@@ -150,11 +150,12 @@ class Request
             }	
 		}			
 	}
+    
     /**
-    * Метод повертає рядок з типом захисту 
-    * @return string рядок http або https
-    *
-    */
+     * Метод повертає рядок з типом захисту 
+     * @return string рядок http або https
+     *
+     */
     public function getHostSecure()
     {
         $scheme = isset($_SERVER['HTTP_SCHEME']) ? $_SERVER['HTTP_SCHEME'] : (
@@ -168,10 +169,10 @@ class Request
     }
     
     /**
-    * Метод повертає рядок з інформацією про хост 
-    * @return string рядок з інформацією про хост
-    *
-    */
+     * Метод повертає рядок з інформацією про хост 
+     * @return string рядок з інформацією про хост
+     *
+     */
     public function getHostInfo()
     {
         if (isset($_SERVER['HTTP_HOST'])) {
@@ -191,10 +192,10 @@ class Request
     }
 
     /**
-    * Метод повертає базовий уніфікований локатор 
-    * @return string рядок уніфікований локатор
-    *
-    */
+     * Метод повертає базовий уніфікований локатор 
+     * @return string рядок уніфікований локатор
+     *
+     */
     public function getBaseUrl()
     {
         return $this->getHostSecure().'://'.implode('/', array_slice(
@@ -202,10 +203,10 @@ class Request
     }
 
     /**
-    * Метод повертає дані про шлях в запрошеному URL
-    * @return string рядок зі шляхом
-    *
-    */
+     * Метод повертає дані про шлях в запрошеному URL
+     * @return string рядок зі шляхом
+     *
+     */
     public function getPathInfo()
     {
        if(strlen($this->_pathInfo) == 0) 
@@ -214,10 +215,10 @@ class Request
     }
     
     /**
-    * Метод встановлює шлях в запиті
-    * @param string $value рядок зі шляхом який необхідно встановити
-    *
-    */
+     * Метод встановлює шлях в запиті
+     * @param string $value рядок зі шляхом який необхідно встановити
+     *
+     */
     public function setPathInfo($value)
     {
         $this->_pathInfo = ltrim($value, '/');
@@ -225,10 +226,10 @@ class Request
     
     
     /**
-    * Метод повертає параметри із запиту методом GET
-    * @param string $key рядок із ключем для пошуку
-    * @param string $default значення параметра
-    */  
+     * Метод повертає параметри із запиту методом GET
+     * @param string $key рядок із ключем для пошуку
+     * @param string $default значення параметра
+     */  
     public function get($key,$default = null) 
     {
         if($this->isGet()) {
@@ -238,10 +239,10 @@ class Request
     }
     
     /**
-    * Метод повертає параметри із запиту методом POST
-    * @param string $key рядок із ключем для пошуку
-    * @param string $default значення параметра
-    */   
+     * Метод повертає параметри із запиту методом POST
+     * @param string $key рядок із ключем для пошуку
+     * @param string $default значення параметра
+     */   
     public function post($key, $default = null)
     {
         if($this->isPost()) {
@@ -251,10 +252,10 @@ class Request
     }
 
     /**
-    * Метод перевіряє наявність параметрів в запиті
-    * @param string $key рядок із ключем для пошуку
-    *
-    */
+     * Метод перевіряє наявність параметрів в запиті
+     * @param string $key рядок із ключем для пошуку
+     *
+     */
     public function has($key) {
         return isset($this->_part[$key]);
     }
@@ -273,22 +274,19 @@ class Request
         }
     }
     
-    /*public function getRequest($uri)
-    {
-        return new Request($uri);
-    }*/
-    
     /**
-    * Метод виконує фільтрацію вхідних даних запиту
-    * @param string $value вхідні данні для фільтрації
-    * @return string $text відфільтровані дані 
-    *
-    */
+     * Метод виконує фільтрацію вхідних даних запиту
+     * @param string $value вхідні данні для фільтрації
+     * @return string $text відфільтровані дані 
+     *
+     */
     protected function filter($value)
     {
         if (strlen($value)){
             $text = trim($value);
-            $text = preg_replace("/[^a-zа-я0-9\., _\n]/i", "", $text);
+            //$text = preg_replace("/[^a-zа-я0-9\., _\n]/i", "", $text);
+            $pattern = '/<\s*\/*\s*\w*>|[\$`~#<>\[\]\{\}\\\*\^%]/';
+            $text = preg_replace($pattern, "", $text);
             $text = htmlspecialchars($text);
         } else {
             return false;

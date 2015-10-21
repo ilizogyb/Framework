@@ -12,19 +12,44 @@ class Session
     private  $lifetime = 1200000; // 14 днів
     private  $cookieName = "cid";
     private  $started = false; // Перемикач початку сесії
+    public   $returnUrl;
+    protected static $_instance;
     
-    public function __construct($id = NULL)
+    /**
+     * Закриваємо доступ до функції поза класом.
+     *
+     */
+    private function __construct($id = NULL)
     {
         if($id != null) {
             session_id($id);
         }
 
     }
+    /**
+     * Закриваємо доступ до функції поза класом.
+     *
+     */
+    private function __clone(){}
     
     /**
-    * Метод для створення сесії
-    *
-    */
+     * Статична функція, яка повертає
+     * екземпляр класу або створює новий за
+     * необхідності
+     *
+     * @return Session
+     */
+    public static function getInstance()
+	{
+		if(null === self::$_instance) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
+	}
+    /**
+     * Метод для створення сесії
+     *
+     */
     public function start() {
         if(!$this->started) {
               session_set_cookie_params ($this->lifetime + time(), '/'); 
@@ -45,25 +70,25 @@ class Session
     } 
     
     /**
-    * Метод для отриманння ідентифікатора даної сесії
-    * @return string рядок з ідентифікатором сесії
-    *
-    */
+     * Метод для отриманння ідентифікатора даної сесії
+     * @return string рядок з ідентифікатором сесії
+     *
+     */
     public function getSessionId()
     {
         return session_id();
     }
    
     /**
-    * Метод для встановлення значення в даній сесії
-    * @param string $key ключ значення
-    * @param string $data  значення
-    * @return boolean булеву значення істиності або хибності 
-    * залежно від успішності операції запису
-    */
+     * Метод для встановлення значення в даній сесії
+     * @param string $key ключ значення
+     * @param string $data  значення
+     * @return boolean булеву значення істиності або хибності 
+     * залежно від успішності операції запису
+     */
     public function write($key, $data)
     {
-        if($this->started) {
+        if($this->isCreated()) {
             $_SESSION[$key] = $data;
             return true;
         } else {
@@ -72,10 +97,10 @@ class Session
     }
     
     /**
-    * Метод для отриманння значення встановленого в даній сесії
-    * @param string $key ключ значення
-    * @return string значення ключа
-    */
+     * Метод для отриманння значення встановленого в даній сесії
+     * @param string $key ключ значення
+     * @return string значення ключа
+     */
     public function read($key)
     {
         $value = null;
@@ -87,22 +112,20 @@ class Session
     }
     
     /**
-    * Метод для видалення значення встановленого в даній сесії
-    * @param string $key ключ значення
-    *
-    */  
+     * Метод для видалення значення встановленого в даній сесії
+     * @param string $key ключ значення
+     */  
     public function del($key)
     { 
-        if($this->started) {
+        if($this->isCreated()) {
             $_SESSION[$key] = NULL;
             unset($_SESSION[$key]);
         } 
     } 
 
     /**
-    * Метод для очищення даних в поточній сесії
-    *
-    */    
+     * Метод для очищення даних в поточній сесії
+     */    
     public function clear()
     {
         if($this->started) {
@@ -113,9 +136,8 @@ class Session
     }
  
     /**
-    * Метод для знищення поточної сесії
-    *
-    */ 
+     * Метод для знищення поточної сесії
+     */ 
     public function destroy()
     {
         if($this->started) {
@@ -129,9 +151,8 @@ class Session
     } 
 
     /**
-    * Метод для перезапуску сесії
-    *
-    */    
+     * Метод для перезапуску сесії
+     */    
     public function restart()
     {
         if($this->started) {
@@ -143,11 +164,11 @@ class Session
     } 
     
     /**
-    * Метод для закриття сесії, наприклад коли дані сесії потрібні
-    * лише для читання. Для прикладу, послідовність використання 
-    * write=>shutdown start=>read=>shutdown
-    *
-    */      
+     * Метод для закриття сесії, наприклад коли дані сесії потрібні
+     * лише для читання. Для прикладу, послідовність використання 
+     * write=>shutdown start=>read=>shutdown
+     *
+     */      
     public function shutdown()
     {
         if($this->started) {
@@ -156,5 +177,16 @@ class Session
         } else {
             trigger_error('Session not started', E_USER_WARNING);
         }
+    }
+    
+    /**
+     * Метод для встановлення базового роута для
+     * повернення на головну сторінку
+     */      
+    public function setReturnUrl($url){
+        if (!strpos($url, 'login')) {
+            $this->write('returnUrl', $url);
+        }
+        $this->returnUrl = $this->read('returnUrl');
     }
 }

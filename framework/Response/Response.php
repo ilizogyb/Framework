@@ -1,12 +1,12 @@
 <?php
-
-namespace Framework\Response;
 /**
  * Клас реалізація HTTP Response
  * @autor Lizogyb Igor
  * @since 1.0
  *  
  */
+
+namespace Framework\Response;
 
 class Response
 {
@@ -108,19 +108,19 @@ class Response
 	}
 	
     /**
-    * Метод для отримання статус коду
-    * @return рядок і значеням статус коду
-    */
+     * Метод для отримання статус коду
+     * @return рядок і значеням статус коду
+     */
 	public function getStatusCode()
     {
         return $this->_statusCode;
     }
     
     /**
-    * Метод для встановлення статус коду
-    * @param int $value тризначне число із значенням коду
-    * @param string $text рядок із поясненням значення коду
-    */
+     * Метод для встановлення статус коду
+     * @param int $value тризначне число із значенням коду
+     * @param string $text рядок із поясненням значення коду
+     */
     public function setStatusCode($value, $text = null)
     {
 		if ($value === null) {
@@ -136,10 +136,10 @@ class Response
 	}
 
     /**
-    * Метод для нормалізації  заголовків
-    * @param string $name назва заголовку
-    * @return string нормалізований заголовок
-    */
+     * Метод для нормалізації  заголовків
+     * @param string $name назва заголовку
+     * @return string нормалізований заголовок
+     */
     protected function normalizeHeaderName($name)
     {
         return preg_replace_callback(
@@ -152,10 +152,10 @@ class Response
     }
 	
     /**
-    * Метод для отримання поточного значення заголовку
-    * @param string $name назва заголовку
-    * @return string рядок із значенням заголовку
-    */
+     * Метод для отримання поточного значення заголовку
+     * @param string $name назва заголовку
+     * @return string рядок із значенням заголовку
+     */
     public function getHeader($name)
     {
         $name = $this->normalizeHeaderName($name);
@@ -164,23 +164,24 @@ class Response
     }
 
     /**
-    * Метод для отримання заголовків з поточного response
-    * @return масив із рядками заголовків
-    */
+     * Метод для отримання заголовків з поточного response
+     * @return масив із рядками заголовків
+     */
     public function getHeaders()
     { 
 		return $this->_headers;
 	}
    
-   /**
-   * Метод для встановлення HTTP заголовків.
-   * @param string  $name ім'я заголовку
-   * @param string  $value    значення(вставіть null для видалення заголовку)
-   * @param bool    $replace  зміна значення
-   */
+    /**
+     * Метод для встановлення HTTP заголовків.
+     * @param string  $name ім'я заголовку
+     * @param string  $value    значення(вставіть null для видалення заголовку)
+     * @param bool    $replace  зміна значення
+     */
 	public function setHeader($name, $value, $replace = true)
     {
         $name = $this->normalizeHeaderName($name);
+
         //Знищуємо заголовок якщо значеня відсутнє
         if ($value == null) {
             unset($this->headers[$name]);
@@ -204,54 +205,58 @@ class Response
         $this->_headers[$name] = $value;
     }
 
-   /**
-   * Метод для типу контенту для поточного response.
-   * @param string  $value    рядок із значенням типу
-   */
+    /**
+     * Метод для типу контенту для поточного response.
+     * @param string  $value    рядок із значенням типу
+     */
     public function setContentType($value)
     {
         $this->_headers['Content-Type'] = $value;
     }
    
-   /**
-   * Метод для отримання типу контенту для поточного response.
-   * @retutn string  рядок із значенням типу контенту
-   */
+    /**
+     * Метод для отримання типу контенту для поточного response.
+     * @retutn string  рядок із значенням типу контенту
+     */
     public function getContentType()
     {
          return $this->_headers['Content-Type'];
     }
 
-   /**
-   * Метод для отримання контенту поточного response.
-   * @retutn string  контент поточного response
-   */
+    /**
+     * Метод для отримання контенту поточного response.
+     * @retutn string  контент поточного response
+     */
     public function getContent()
     {
         return $this->content;
     }
 
-   /**
-   * Метод для встановлення контенту поточного response.
-   * @param $content string  контент поточного response
-   */   
+    /**
+     * Метод для встановлення контенту поточного response.
+     * @param $content string  контент поточного response
+     */   
     public function setContent($content)
     {
-        if($content != null && strlen($content) > 0) {
-            $this->content .= (string) $content;
-        }    
+        if (!is_array($content)) {
+            if($content != null && strlen($content) > 0) {
+                $this->content .= (string) $content;
+            }
+        } else {
+            $this->content = $content;
+        }
     }
    
-   /**
-   * Метод для встановлення кук поточного sponse.
-   * @param string $name ім'я заголовку
-   * @param string $value значення куки
-   * @param string $expire час життя куки
-   * @param string $path шлях
-   * @param  string  $domain    ім'я домену
-   * @param  bool    $secure    якщо використовується захист
-   * @param  bool    $httpOnly  Якщо використовується тільки  HTTP
-   */
+    /**
+     * Метод для встановлення кук поточного sponse.
+     * @param string $name ім'я заголовку
+     * @param string $value значення куки
+     * @param string $expire час життя куки
+     * @param string $path шлях
+     * @param  string  $domain    ім'я домену
+     * @param  bool    $secure    якщо використовується захист
+     * @param  bool    $httpOnly  Якщо використовується тільки  HTTP
+     */
     public function setCookie($name, $value, $expire = null, $path = '/', $domain = '', $secure = false, $httpOnly = false) 
     {
        if($expire != null)
@@ -279,22 +284,22 @@ class Response
     }
 
     /**
-    * Метод для отимання масиву кук поточного response.
-    * @return string масив з куками поточного response
-    *
-    */
+     * Метод для отимання масиву кук поточного response.
+     * @return string масив з куками поточного response
+     *
+     */
     public function getCookies()
     {
         return $this->_cookies;
     }
 
     /**
-    * Метод для видалення куки з поточного response.
-    * @param $name string ім'я заголовку
-    * @return булеве значення хибності  якщо кука не втдалилась
-    * або Response
-    *
-    */
+     * Метод для видалення куки з поточного response.
+     * @param $name string ім'я заголовку
+     * @return булеве значення хибності  якщо кука не втдалилась
+     * або Response
+     *
+     */
     public function delCookie($name)
     {
         if($name != null && strlen($name) > 0) {        
@@ -305,10 +310,10 @@ class Response
     }
 
     /**
-    * Метод для видалення всіх кук з поточного response.
-    * @return Response
-    *
-    */
+     * Метод для видалення всіх кук з поточного response.
+     * @return Response
+     *
+     */
     public function delCookies() 
     {
         $this->_cookies = array();
@@ -316,9 +321,9 @@ class Response
     }
 
     /**
-    * Метод для відправки заголовків і кук в HTTP клієнт, посилає заголовки і куки
-    * тільки один раз, наступні виклики методу не виконуватимуть ніяких дій
-    */   
+     * Метод для відправки заголовків і кук в HTTP клієнт, посилає заголовки і куки
+     * тільки один раз, наступні виклики методу не виконуватимуть ніяких дій
+     */   
     protected function sendHeaders()
     {
         //заголовки
@@ -340,9 +345,9 @@ class Response
     }
 
     /**
-    * Метод для відправки кук в HTTP клієнт 
-    *
-    */
+     * Метод для відправки кук в HTTP клієнт 
+     *
+     */
     protected function sendCookies() 
     {
          // ітерація і встановлення куків
@@ -354,9 +359,9 @@ class Response
     }
 
     /**
-    * Метод для відправки заголовків та контенту в HTTP клієнт 
-    *
-    */
+     * Метод для відправки заголовків та контенту в HTTP клієнт 
+     *
+     */
     public function send()
     {
         $this->sendHeaders();

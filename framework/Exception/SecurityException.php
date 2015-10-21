@@ -1,7 +1,4 @@
 <?php
-
-namespace Framework\Exception;
-
 /**
  * SecurityException викидається коли виникає помилка пов'язана з безпекою
  * 
@@ -9,6 +6,9 @@ namespace Framework\Exception;
  * @author     Lizogyb Igor
  * @version    1.0
  */
+
+namespace Framework\Exception;
+
 class SecurityException extends FrameworkException
 {
 }

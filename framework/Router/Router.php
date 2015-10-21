@@ -1,15 +1,15 @@
 <?php
+/**
+* Клас Router являється реалізацією маршрутизатора
+* @autor Lizogyb Igor
+* @since 1.0
+*/
 
 namespace Framework\Router;
 
 use \Framework\Request\Request;
 use \Framework\Exception\ClassNotFoundException;
 
-/**
-* Клас Router являється реалізацією маршрутизатора
-* @autor Lizogyb Igor
-* @since 1.0
-*/
 class Router 
 {
 
@@ -32,6 +32,11 @@ class Router
         $this->parseUri($options);
 	}
 	
+    /** 
+	 * Метод для встановлення URI
+	 * @param Request $req запит
+     *
+	 */
     public function setUri(Request $req)
 	{
         $this->path = $req->getPathInfo();
@@ -39,19 +44,21 @@ class Router
 	}
     
 	/** 
-	* Метод для отримання URI
-	* @ return масив з частинами URI
-	*/
+	 * Метод для отримання URI
+	 * @return масив з частинами URI
+     *
+	 */
 	protected function getUri()
 	{
         return explode('/', $this->path);
 	}
 	
 	/** 
-	* Метод для розбору URI
-	* @param array $data_array масив з конфігурацією маршрутів та їх
-	* властивостей(параметрів)
-	*/
+	 * Метод для розбору URI
+	 * @param array $data_array масив з конфігурацією маршрутів та їх
+	 * властивостей(параметрів)
+     *
+	 */
 	protected function parseUri(array $data_array)
 	{
 		$uri_array = $this->getUri();
@@ -153,28 +160,31 @@ class Router
 	}
 	
 	/**
-	* Отримання контроллера
-	* @return string рядок із значенням контроллера
-	*/
+	 * Отримання контроллера
+	 * @return string рядок із значенням контроллера
+     *
+	 */
 	public function getController()
 	{
 		return $this->controller;
 	}
 	
 	/**
-	* Отримання дії
-	* @return string масив з рядками із значенням дій
-	*/	
+	 * Отримання дії
+	 * @return string масив з рядками із значенням дій
+     *
+	 */	
 	public function getAction()
 	{
 		return $this->action;
 	}
 	
 	/**
-	* Отримання методу
-	* @return string рядок із значенням методу або булеве 
-	* значення хибності якщо метод не існує
-	*/
+	 * Отримання методу
+	 * @return string рядок із значенням методу або булеве 
+	 * значення хибності якщо метод не існує
+     *
+	 */
 	public function getMethod()
 	{
 		if(strlen($this->method) > 0)
@@ -184,10 +194,11 @@ class Router
 	}
 	
 	/**
-	* Отримання Id посту
-	* @return  string рядок із значенням Id посту або булеве 
-	* значення хибності якщо метод не існує
-	*/	
+	 * Отримання Id посту
+	 * @return  string рядок із значенням Id посту або булеве 
+	 * значення хибності якщо метод не існує
+     *
+	 */	
 	public function getId()
 	{
 		if(strlen($this->id) > 0)
@@ -197,10 +208,11 @@ class Router
 	}
 	
 	/**
-	* Отримання властивостей безпеки
-	* @return string рядок із значенням властивостей безпеки або булеве 
-	* значення хибності якщо метод не існує
-	*/
+	 * Отримання властивостей безпеки
+	 * @return string рядок із значенням властивостей безпеки або булеве 
+	 * значення хибності якщо метод не існує
+     *
+	 */
 	public function getSecurity()
 	{
 		if(strlen($this->security) > 0)
@@ -210,18 +222,38 @@ class Router
 	}
 	
 	/**
-	* Метод вмикання потрібного контроллера
-	*/
+	 * Метод вмикання потрібного контроллера
+     * @throws ClassNotFoundException якщо потрібний клас
+     * не знайдено
+     *
+	 */
 	function run()
 	{
         
-        $controllerPath =  $_SERVER['DOCUMENT_ROOT'] .'/src/' . $this->controller.'.php';
+        $controllerPath = '../src/' . $this->controller . '.php';
 		if(file_exists($controllerPath)){
           include($controllerPath);
-			echo $controllerPath;
         } else {
             throw new ClassNotFoundException($this->controller.' not found in : '.$controllerPath);
 	    }
 	}
+    
+    /**
+     * Метод для побудови роута по заданим значенням
+     * @param string $name
+     * @param string array $params параметри роута
+     */
+    public function build($name, $params = array())
+    {
+       if (!is_null($this->options)) {
+           $patt = '';
+           foreach($this->options as $k=>$v){
+               if ($k == $name){
+                   $patt = $v['pattern'];
+                }
+            }
+       }
+       return $patt;
+    }
 }
 

@@ -1,7 +1,4 @@
 <?php
-
-namespace Framework\Exception;
-
 /**
  * StorageException викидається коли виникає помилка пов'язана з 
  * збереженням інформації
@@ -9,6 +6,9 @@ namespace Framework\Exception;
  * @author     Lizogyb Igor
  * @version    1.0
  */
+ 
+namespace Framework\Exception;
+
 class StorageException extends FrameworkException
 {
 }

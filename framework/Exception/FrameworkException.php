@@ -1,16 +1,17 @@
 <?php
-namespace Framework\Exception;
-use Framework\Response\Response;
-
 /**
  * Реалізація базового класу для обробки помилок
  * @autor Lizogyb Igor
  * @since 1.0
  *
  */
+ 
+namespace Framework\Exception;
+use Framework\Response\Response;
+
 class FrameworkException extends \Exception 
 {
-    const LOG_PATH = 'logs';
+    const LOG_PATH = '..\app\logs';
     public $statusCode;
         
     public function __construct($message = "", $code = 200, $enableLog = true, Exception $previous = NULL)
