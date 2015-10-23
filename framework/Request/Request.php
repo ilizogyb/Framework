@@ -33,6 +33,16 @@ class Request
     }
 
     /**
+     * Метод повертає URL запиту
+     * @return string рядок уніфікований локатор
+     *
+     */
+    public function getUrl()
+    {
+        return $this->_url;
+    }
+    
+    /**
      * Повертає метод поточного запиту GET, POST, HEAD, PUT, DELETE
      * @return Метод повертає рядок, наприклад, GET, POST, HEAD, PUT, DELETE.
      * Значення, що повертається перетворився у верхньому регістрі.

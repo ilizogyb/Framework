@@ -10,17 +10,20 @@
 namespace Framework\Response;
 
 class JsonResponse extends Response
-{
+{   
+    protected $JSONinput = array();
     /**
      * Конструктор для ініціалізації JSON Response
      * @param string array дані для JSON
      */
     public function __construct($input)
     {
-        $this->options['sendHeaders'] = true;
         $this->setStatusCode(200);
         $this->setHeader('Content-Type', 'application/json', true);
-        $this->setContent($input);
+        $this->options['sendHeaders'] = false;
+        //$this->sendHeaders();
+        //$this->setContent($input);
+        $this->JSONinput = $input;
         $this->send();
     }
    
@@ -29,8 +32,9 @@ class JsonResponse extends Response
      *
      */
     public function send() {
-        $this->sendHeaders();
-        echo json_encode($this->getContent());
+        header(implode($this->getHeaders(), '\n'));
+        //echo json_encode($this->getContent());
+        echo json_encode($this->JSONinput);
     }
 }
 ?>

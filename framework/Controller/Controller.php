@@ -6,7 +6,7 @@
  */
 
 namespace Framework\Controller;
-use \Framework\Renderer\Render;
+use \Framework\Renderer\Renderer;
 use \Framework\Application;
 use \Framework\Request\Request;
 use \Framework\Response\Response;
@@ -21,30 +21,19 @@ abstract class Controller
 
     public function __construct()
     {
-        $this->request = Application::getRequest();
+
     }
     
     /**
      * Метод для візуалізації контенту
-     * @param string $view ім'я шаблону
+     * @param string $layout ім'я шаблону
      * @param array $params змінні для шаблону
      * @return string вміст сторінки
      */
-    public function render($view, $params = [])
+    public function render($layout, $content)
     {
-        $content = $this->getView()->render($view, $params);
-    }
-    
-    /**
-     * Метод для отримання рендера з класу додатку
-     * @return Render
-     */
-    public function getView()
-    {
-        if ($this->view === null) {
-            $this->view = Application::getView();
-        }
-        return $this->view;
+        $renderer = new Renderer($layout, $content);
+        return new Response($renderer->render());
     }
     
     /**
@@ -54,7 +43,7 @@ abstract class Controller
      */
     public function getRequest()
     {
-        return $this->request;
+        return Service::get('request');
     }
     
     /**
@@ -87,18 +76,6 @@ abstract class Controller
     {
         $router = Service::get('router');
         return $router->build($route, $params);
-    }
-    
-    /**
-     * Метод для виклику контроллера і передачі йому параметрів
-     * HMVC паттерн
-     * @param string $path шлях виклику контроллера
-     * @param string array $param додаткові параметри, наприклад дії 
-     */
-    public function get($path, $param = [])
-    {  
-        echo "<br>Call to other Controller (HMVC)<br>";        
-        Application::runController($path, $param);
     }
 
 

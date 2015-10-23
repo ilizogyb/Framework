@@ -24,7 +24,7 @@ class PostController extends Controller
     {
         //User Greatings/// Flush testing
         $great = array('info'=> array("Welcome to my first blog!"));
-        Service::get('session')->write('flush',$great);
+        Service::get('session')->write('flush', $great);
         //User Greatings/// Flush testing
         
         return $this->render('index.html', array('posts' => Post::find('all')));

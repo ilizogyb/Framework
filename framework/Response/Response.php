@@ -90,23 +90,34 @@ class Response
     
     private $_statusCode = 200;
     private $_headers;
-    protected $content = '';
+    protected $content;
     protected $_cookies = array();
     public $statusText = 'OK';
-    public $version;
     protected $options = array();
 		
-	public function __construct()
+	public function __construct($content, $msg = '', $code = 200)
 	{
-		if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.0') {
-			$this->version = '1.0';
-        } else {
-           $this->version = '1.1';
-        }
+		$this->content = $content;
+        $this->statusText = $msg;
+        $this->_statusCode = $code;
+        
         // Встановлення можливості відправки HTTP заголовків, та кук
         $this->options['sendHeaders'] = true;
 	}
-	
+    
+	/**
+     * Метод для отримання версії HTTP протоколу
+     * @return string версія протоколу
+     */
+    public function getHTTPver() {
+        if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.0') {
+			return '1.0';
+        } else {
+           return '1.1';
+        }
+    }
+    
+    
     /**
      * Метод для отримання статус коду
      * @return рядок і значеням статус коду
@@ -238,13 +249,7 @@ class Response
      */   
     public function setContent($content)
     {
-        if (!is_array($content)) {
-            if($content != null && strlen($content) > 0) {
-                $this->content .= (string) $content;
-            }
-        } else {
-            $this->content = $content;
-        }
+        $this->content = $content;
     }
    
     /**
@@ -325,20 +330,20 @@ class Response
      * тільки один раз, наступні виклики методу не виконуватимуть ніяких дій
      */   
     protected function sendHeaders()
-    {
+    { 
         //заголовки
         if(count($this->_headers) === 0 || !$this->options['sendHeaders']) {
             return;
         }
  
         $statusCode = $this->getStatusCode();
-        $ver = $this->version;
-        header("HTTP/{$ver} $statusCode {$this->statusText}");
+
+        header("HTTP/{$this->getHTTPver()} $statusCode {$this->statusText}");
 
        foreach($this->_headers as $name => $value) {
             header($name.': '.$value);
-       }
 
+       }
         $this->sendCookies();
         //Запобігання повторній пересилці заголовків
         $this->options['sendHeaders'] = false;
@@ -376,7 +381,7 @@ class Response
     {
        $status = sprintf(
            'HTTP/%s %d %s',
-            $this->version,
+            $this->getHTTPver(),
             $this->getStatusCode(),
             $this->statusText
         );

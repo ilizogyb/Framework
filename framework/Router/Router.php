@@ -7,253 +7,120 @@
 
 namespace Framework\Router;
 
-use \Framework\Request\Request;
-use \Framework\Exception\ClassNotFoundException;
+use Framework\DI\Service;
+use Framework\Exception\RouteException;
 
 class Router 
 {
-
-    const DEFAULT_CONTROLLER = "Blog\\Controller\\PostController";
-	const DEFAULT_ACTION     = "index";
-	
-	protected $controller    = self::DEFAULT_CONTROLLER;
-    protected $action        = array();
-	protected $method        = '';
-	protected $security      = '';
-	protected $id            = '';
-	protected $basePath      = "/";
-    protected $path          = '';
-    protected $options       = array();
-
-	public function __construct(Request $req, $options)
-	{
-		$this->path = $req->getPathInfo();
-        $this->options = $options;
-        $this->parseUri($options);
-	}
-	
-    /** 
-	 * Метод для встановлення URI
-	 * @param Request $req запит
+   protected $request;
+   protected $map = array();
+   
+   public function __construct($map = array()){
+        $this->map = $map;
+        $this->request = Service::get('request');
+    }
+    /**
+     * Головний метод класу, який запускає процес маршрутизації
+     * шукає та повертає контроллер, дію та параметри(змінні)
+     * @return mixed
      *
-	 */
-    public function setUri(Request $req)
-	{
-        $this->path = $req->getPathInfo();
-        $this->parseUri($this->options);
-	}
-    
-	/** 
-	 * Метод для отримання URI
-	 * @return масив з частинами URI
-     *
-	 */
-	protected function getUri()
-	{
-        return explode('/', $this->path);
-	}
-	
-	/** 
-	 * Метод для розбору URI
-	 * @param array $data_array масив з конфігурацією маршрутів та їх
-	 * властивостей(параметрів)
-     *
-	 */
-	protected function parseUri(array $data_array)
-	{
-		$uri_array = $this->getUri();
-		
-        foreach($data_array as $data) {
-          $result = ltrim($data['pattern'],'/');
-          $result = explode('/', $result);
-
-			//Обробка URI виду /
-			if(strlen($uri_array[0]) === 0) {
-                $this->controller = self::DEFAULT_CONTROLLER;
-                array_push($this->action,self::DEFAULT_ACTION);
-				break;
-			}
-            
-            //Обробка URI виду /resource
-			if(count($uri_array) === 1 && count($result) === 1) {
-				if($uri_array[0] == $result[0]) {
-					$this->controller = $data['controller'];
-					array_push($this->action, $data['action']);
-					//Обообка вкладених опцій
-					if(isset($data['_requirements']) && is_array($data['_requirements']))
-					{
-						foreach($data['_requirements'] as $k=>$v) {
-							if($k === '_method') {
-								$this->method = $v;
-							}
-							if($k === 'id') {
-								$this->id = $v;
-							}
-						}
-					}
-				}
-			}
-            
-            //Обробка URI виду /resource/resource1
-			if(count($uri_array) === 2 && count($result) === 2) {
-                if($uri_array[0] == $result[0]) {
-                    if (!preg_match_all("/[^\d+$]/", $uri_array[1])) {
-                        $id = $uri_array[1];
-                        $uri_array[1] ='{id}';
-                    } 
+     */
+    public function run() 
+    {
+        $url =  $this->request->getUrl();
+        if(!is_null($this->map))
+        {
+            foreach ($this->map as $key=>$value)
+            {
+                if (strpos($value['pattern'], '{')) {
+                   $result = $this->patternToRegexp($value);
+                   $pattern = $result[0];
+                   $vars = $this->getVars($pattern, $result[1], $url);
+                } else {
+                    $pattern = $pattern = $value['pattern'];
+                }
+                
+                if(preg_match('~^'.$pattern.'$~', $url))
+                {
+                    $routes = $value;
                     
-                    if($uri_array[1] == $result[1]) {
-                       
-                       $this->controller = $data['controller'];
-					   array_push($this->action, $data['action']);
-
-                        //Обробка вкладених опцій
-					    if(isset($data['security']) && is_array($data['security'])) {
-						    $this->security = $data['security'][0];
-					    }
-                        
-                        if(isset($data['_requirements']) && is_array($data['_requirements']))
-                        {
-                            foreach($data['_requirements'] as $k=>$v) {
-                                if($k === 'id') {
-								$this->id = $id;
-                                }
-                            }
-                        }
-                    } 
-                }                
-            }
-            
-            //Обробка URI виду /resource/resource1/resource2
-			if(count($uri_array) === 3 && count($result) === 3) {
-                if($uri_array[0] == $result[0]) {
-                    if (!preg_match_all("/[^\d+$]/", $uri_array[1])) {
-                        $id = $uri_array[1];
-                        $uri_array[1] ='{id}';
-                    }
-                    
-                    if($uri_array[0] == $result[0] && $uri_array[1] == $result[1] && $uri_array[2] == $result[2]) {
-                        $this->controller = $data['controller'];
-					    array_push($this->action, $data['action']);
-					    //Обробка вкладених опцій
-                        if(isset($data['_requirements']) && is_array($data['_requirements']))
-                        {
-                            foreach($data['_requirements'] as $k=>$v) {
-                                if($k === 'id') {
-                                    $this->id = $id;
-                                }
-                                if($k === '_method') {
-                                    $this->method = $v;
-                                }
-                            }
-                        }
+                    if(!isset($value['_requirements']['_method'])) {
+                        break;
                     }
                 }
+
+            }  
+            if(!empty($routes))
+            {
+                if(!empty($vars)) {
+                    $routes['vars'] = $vars;
+                }   
+                return $routes;
+
+            } else { 
+                throw new RouteException('Not found');
+            }
+        } else {
+            throw new RouteException();
+        }
+    }
+    
+    /**
+     * Метод для отримання патерну для розбору роутів
+     * @param string array $routes масив з потрібним патерном, контроллером
+     * дією, та змінними
+     * @return mixed 
+     */
+    private function patternToRegexp($routes = array())
+    { 
+        $pattern = '/\{[\w\d_]+\}/Ui';
+        preg_match_all($pattern, $routes['pattern'], $matches);
+        foreach ($matches[0] as $value){
+            if(array_key_exists(trim($value, '{}'), $routes['_requirements'])) {
+                $replacement[] = '('.$routes['_requirements'][trim($value, '{}')].')';
+            }
+            $str = str_replace($matches[0], $replacement, $routes['pattern']);
+            return array($str, $matches[0]);
+        }
+
+    }
+    
+    /**
+     * Метод для отримання зміних із запиту
+     * @param string $pattern патерн для порівняння
+     * @param string array $keys масив з ключами які потрібно порівняти
+     * @param string $url поточний URL
+     * @return mixed 
+     */
+    private function getVars($pattern, $keys, $url)
+    {
+        $vars = array();
+        preg_match('~'.$pattern.'~i', $url, $matches);
+        foreach ($keys as $key=>$value){
+            if (isset($matches[$key+1])){
+                $vars[trim($value, '{}')] = $matches[$key+1];
             }
         }
-        
-        //Якщо не відбулось співпадань
-        if(is_array($this->action) && empty($this->action)){
-           $this->controller = self::DEFAULT_CONTROLLER;
-           array_push($this->action, self::DEFAULT_ACTION);
-        }
-	}
-	
-	/**
-	 * Отримання контроллера
-	 * @return string рядок із значенням контроллера
-     *
-	 */
-	public function getController()
-	{
-		return $this->controller;
-	}
-	
-	/**
-	 * Отримання дії
-	 * @return string масив з рядками із значенням дій
-     *
-	 */	
-	public function getAction()
-	{
-		return $this->action;
-	}
-	
-	/**
-	 * Отримання методу
-	 * @return string рядок із значенням методу або булеве 
-	 * значення хибності якщо метод не існує
-     *
-	 */
-	public function getMethod()
-	{
-		if(strlen($this->method) > 0)
-			return $this->method;
-		else 
-			return false;
-	}
-	
-	/**
-	 * Отримання Id посту
-	 * @return  string рядок із значенням Id посту або булеве 
-	 * значення хибності якщо метод не існує
-     *
-	 */	
-	public function getId()
-	{
-		if(strlen($this->id) > 0)
-			return $this->id;
-		else
-			return false;
-	}
-	
-	/**
-	 * Отримання властивостей безпеки
-	 * @return string рядок із значенням властивостей безпеки або булеве 
-	 * значення хибності якщо метод не існує
-     *
-	 */
-	public function getSecurity()
-	{
-		if(strlen($this->security) > 0)
-			return $this->security;
-		else
-			return false;
-	}
-	
-	/**
-	 * Метод вмикання потрібного контроллера
-     * @throws ClassNotFoundException якщо потрібний клас
-     * не знайдено
-     *
-	 */
-	function run()
-	{
-        
-        $controllerPath = '../src/' . $this->controller . '.php';
-		if(file_exists($controllerPath)){
-          include($controllerPath);
-        } else {
-            throw new ClassNotFoundException($this->controller.' not found in : '.$controllerPath);
-	    }
-	}
+        return $vars;
+    }
     
     /**
      * Метод для побудови роута по заданим значенням
      * @param string $name
      * @param string array $params параметри роута
      */
-    public function build($name, $params = array())
+    public function build($name, $params = null)
     {
-       if (!is_null($this->options)) {
-           $patt = '';
-           foreach($this->options as $k=>$v){
-               if ($k == $name){
-                   $patt = $v['pattern'];
+        $url = '';
+        if(array_key_exists($name, $this->map)){
+            $url = $this->map[$name]['pattern'];
+            if($params){
+                foreach($params as $key=>$value) {
+                    $url = str_replace('{'.$key.'}', $value, $url);
                 }
             }
-       }
-       return $patt;
+            $url = preg_replace('~\{[\w\d_]+\}~iU', '', $url);
+        }
+        return $url;
     }
 }
-

@@ -3,6 +3,10 @@ body {
     padding-bottom: 30px;
 }
 
+.user-info-container {
+    width: 50%;
+    margin: 0 auto;
+}
 .theme-dropdown .dropdown-menu {
     position: static;
     display: block;
