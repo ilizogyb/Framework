@@ -11,6 +11,7 @@ namespace Framework\Model;
 
 use Framework\Application;
 use Blog\Model\Post;
+use Framework\Model\Connection;
 use PDO;
 
 abstract class ActiveRecord 
@@ -30,7 +31,8 @@ abstract class ActiveRecord
     public function __construct(Connection $connection=null, $pk='id')
     { 
        if (null === $connection) {
-           self::$connection = Application::createConnection();
+            self::$connection = new Connection();
+            self::$connection = self::$connection->createConnection();
        } else {
            self::$connection = $connection;
        }
@@ -62,13 +64,30 @@ abstract class ActiveRecord
     }
     
     /**
+     * Метод для створення пыдключення до бази даних
+     * @return PDO object
+     */
+    public static function createConnection()
+    {
+         if (null === self::$connection) {
+            self::$connection = new Connection();
+            self::$connection = self::$connection->createConnection();
+            $pdo = self::$connection;
+        } else {
+            $pdo = self::$connection;    
+        }
+        return $pdo;
+    }
+    
+    
+    /**
      * Метод для видалення посту за його ідентифікатором
      * @param string $id ідентифікатор посту, який потрібно
      * видалити
      */
     public function delete($id)
     {
-        $pdo = self::$connection;
+        $pdo = self::createConnection();
         $stmt = $pdo->prepare('DELETE FROM User WHERE id = ?'); 
         $stmt->execute(array($id));      
     }
@@ -82,11 +101,8 @@ abstract class ActiveRecord
      */ 
     public static function find($id)
     {
-        if (null === self::$connection) {
-            $pdo = Application::createConnection();
-        } else {
-            $pdo = self::$connection;    
-        }
+        $pdo = self::createConnection();    
+        
         $result = null;
 
         if (preg_match("/^\d*$/",$id)) {
@@ -181,13 +197,8 @@ abstract class ActiveRecord
      */
     public static function findByEmail($email)
     {
-        $result = null;
-        if (null === self::$connection) {
-            $pdo = Application::createConnection();
-        } else {
-            $pdo = self::$connection;    
-        }
-        
+        $pdo = self::createConnection();    
+
         $emailPatt = '/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/';
         
         if (preg_match($emailPatt, $email)) {

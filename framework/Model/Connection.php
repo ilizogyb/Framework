@@ -9,6 +9,7 @@
 namespace Framework\Model;
 
 use PDO;
+use \Framework\DI\Service;
 
 class Connection
 {
@@ -23,9 +24,7 @@ class Connection
 		PDO::ATTR_STRINGIFY_FETCHES	=> false);
 
 	public $connection;
-    protected $dsn;
-    protected $user = 'root';
-    protected $pass = '52651';
+    protected $connParam;
     
     /**
      * Ініціалізація данних для підключення до бази данних
@@ -34,10 +33,10 @@ class Connection
      */
     public function __construct($dsn = null)
     {
-        $config = Config::getInstance();
-    
+        $config = Service::get('connDBConfig');
+        
        if ($dsn === null) {
-           $this->dsn = $config->getDefaultParamString();
+           $this->connParam = $config->getDefaultParamString();
        } else {
            $this->dsn = $dsn;
        }
@@ -50,11 +49,11 @@ class Connection
      */
     public function createConnection()
     {
-        try {
-            $dbh = new PDO($this->dsn, $this->user, $this->pass, self::$PDO_OPTIONS);
+        try { 
+            $dbh = new PDO($this->connParam['dsn'], $this->connParam['user'], $this->connParam['password'], self::$PDO_OPTIONS);
         } catch(PDOException $e) {
             die('Подключение не удалось: ' . $e->getMessage());       
-        }
+        } 
         return $dbh;
     }
 }

@@ -50,6 +50,13 @@ class Application
             return $obj;
         });
         $services::set('security', '\Framework\Security\Security');
+        
+        $services::set('connDBConfig', function(){
+            $config = Config::getInstance();
+            $config->setConnections(array('test'=>array('dsn'=>$this->config['pdo']['dns'],'user'=>$this->config['pdo']['user'],'password'=>$this->config['pdo']['password'])));
+            $config->setDefaultConnection('test');
+            return $config;
+        });
 	}
 	
 	/**
@@ -99,20 +106,9 @@ class Application
              $response = new Response($content);
              $response->send();
         }
+        
     }
     
-    /**
-     * Метод для створення підключення до бази данних
-     * @return PDO Object Connection 
-     */   
-    public static function createConnection() 
-    {
-        $config = Config::getInstance();
-        $config->setConnections(array('test'=>'mysql:host=127.0.0.1;dbname=mytest;'));
-        $config->setDefaultConnection('test');
-        $conn = new Connection();
-        return $conn->createConnection();
-    }
     
 
     protected function runController($controller, $controllerAction, $vars)
