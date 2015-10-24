@@ -107,9 +107,10 @@ class Router
     /**
      * Метод для побудови роута по заданим значенням
      * @param string $name
+     * @param string  array $param параметри роута
      * @param string array $params параметри роута
      */
-    public function build($name, $params = null)
+    public function build($name, $params = array())
     {
         $url = '';
         if(array_key_exists($name, $this->map)){
@@ -120,7 +121,7 @@ class Router
                 }
             }
             $url = preg_replace('~\{[\w\d_]+\}~iU', '', $url);
-        }
+        } 
         return $url;
     }
 }

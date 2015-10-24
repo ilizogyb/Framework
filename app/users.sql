@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Час створення: Жов 24 2015 р., 10:29
+-- Час створення: Жов 24 2015 р., 11:59
 -- Версія сервера: 5.6.26
 -- Версія PHP: 5.6.11
 
@@ -31,16 +31,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` varchar(254) NOT NULL,
   `password` varchar(100) NOT NULL,
   `role` varchar(20) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
 -- Дамп даних таблиці `users`
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `role`) VALUES
-(3, 'test@yandex.ru', '1', 'ROLE_USER'),
-(2, 'testov@gmail.com', '6547898', 'ROLE_USER'),
-(4, 'myname@gmail.com', '123', 'ROLE_USER');
+(1, 'test@gmail.com', '25f9e794323b453885f5181f1b624d0b', 'ROLE_USER');
 
 --
 -- Індекси збережених таблиць
@@ -60,7 +58,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблиці `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -85,11 +85,12 @@ abstract class ActiveRecord
      * @param string $id ідентифікатор посту, який потрібно
      * видалити
      */
-    public function delete($id)
-    {
+    public static function delete($id)
+    { 
         $pdo = self::createConnection();
-        $stmt = $pdo->prepare('DELETE FROM User WHERE id = ?'); 
-        $stmt->execute(array($id));      
+        $stmt = $pdo->prepare('DELETE FROM ' . static::getTable() . ' WHERE id = ?'); 
+        $stmt->execute(array($id));
+        return true;
     }
     
     /**
@@ -171,7 +172,7 @@ abstract class ActiveRecord
         if('Blog\Model\Post'=== get_class($this)) {
             $this->bind(array("title", "content", "date"), array($this->title, $this->content, $this->date));
         } elseif('Blog\Model\User'=== get_class($this)){
-            $this->bind(array("email", "password", "role"), array($this->email, $this->password, $this->role));    
+            $this->bind(array("email", "password", "role"), array($this->email, md5($this->password), $this->role));    
         }
         
         $pdo = self::$connection;

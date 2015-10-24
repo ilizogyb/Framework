@@ -27,10 +27,11 @@ class SecurityController extends Controller
         if ($this->getRequest()->isPost()) {
 
             if ($user = User::findByEmail($this->getRequest()->post('email'))) {
-                if ($user->password == $this->getRequest()->post('password')) {
+                if ($user->password == md5($this->getRequest()->post('password'))) {
                     Service::get('security')->setUser($user);
                     $returnUrl = Service::get('session')->returnUrl;
                     unset(Service::get('session')->returnUrl);
+                    md5($this->getRequest()->post('password'));
                     return $this->redirect(!is_null($returnUrl)?$returnUrl:$this->generateRoute('home'));
                 }
             }

@@ -3,6 +3,11 @@ body {
     padding-bottom: 30px;
 }
 
+hr {
+    border-style: solid none;
+    margin: 10px;
+}
+
 .user-info-container {
     width: 50%;
     margin: 0 auto;

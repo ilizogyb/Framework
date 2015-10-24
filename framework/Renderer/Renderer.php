@@ -124,8 +124,8 @@ class Renderer {
             call_user_func(array($controller, $action), $par['id']);
         };
         
-        $getRoute = function($name) {
-            return Service::get('router')->build($name);
+        $getRoute = function($name, $params = array()) {
+            return Service::get('router')->build($name, $params);
         };
         
         $generateToken = function(){
