@@ -69,7 +69,7 @@ return array(
 
     ),
     'remove_post'      => array(
-        'pattern'       => '/posts/{id}/remove/',
+        'pattern'       => '/posts/{id}/remove',
         'controller'    => 'CMS\\Controller\\BlogController',
         'action'        => 'remove',
         '_requirements' => array(

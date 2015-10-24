@@ -31,7 +31,7 @@ abstract class Controller
      * @return string вміст сторінки
      */
     public function render($layout, $content)
-    {
+    { 
         $renderer = new Renderer($layout, $content);
         return new Response($renderer->render());
     }
@@ -62,7 +62,7 @@ abstract class Controller
      * @return string рядок з роутом
      */
     public function getRoute()
-    {
+    { 
         echo $this->request->getPathInfo();
     }
 

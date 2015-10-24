@@ -70,10 +70,5 @@ class PostController extends Controller
         }
         return $this->render('show.html', array('post' => $post));
     }
-    
-    public function editAction($id)
-    { 
-        echo "The edit action not implemented yet";
-    }
- 
+
 }

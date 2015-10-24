@@ -13,6 +13,7 @@ use Framework\Exception\RouteException;
 class Router 
 {
    protected $request;
+   
    protected $map = array();
    
    public function __construct($map = array()){
@@ -46,14 +47,21 @@ class Router
                     
                     if(!isset($value['_requirements']['_method'])) {
                         break;
+                    } else {
+                        if(!empty($vars)) {
+                            $routes['vars'] = $vars;
+                        }
                     }
+
                 }
 
             }  
+
             if(!empty($routes))
-            {
+            { 
                 if(!empty($vars)) {
                     $routes['vars'] = $vars;
+                    
                 }   
                 return $routes;
 
@@ -111,7 +119,7 @@ class Router
      * @param string array $params параметри роута
      */
     public function build($name, $params = array())
-    {
+    { 
         $url = '';
         if(array_key_exists($name, $this->map)){
             $url = $this->map[$name]['pattern'];

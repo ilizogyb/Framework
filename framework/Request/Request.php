@@ -294,7 +294,6 @@ class Request
     {
         if (strlen($value)){
             $text = trim($value);
-            //$text = preg_replace("/[^a-zа-я0-9\., _\n]/i", "", $text);
             $pattern = '/<\s*\/*\s*\w*>|[\$`~#<>\[\]\{\}\\\*\^%]/';
             $text = preg_replace($pattern, "", $text);
             $text = htmlspecialchars($text);
