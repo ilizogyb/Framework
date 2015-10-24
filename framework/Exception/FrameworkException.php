@@ -16,7 +16,7 @@ class FrameworkException extends \Exception
         
     public function __construct($message = "", $code = 200, $enableLog = true, Exception $previous = NULL)
     {
-   		parent::__construct($message, (int) $code, $previous);
+        parent::__construct($message, (int) $code, $previous);
         $response = new Response;
         $response->setStatusCode($code);
         $response->setHeader('Content-Type', 'text/html; charset=UTF-8');
@@ -49,6 +49,15 @@ class FrameworkException extends \Exception
     return sprintf('{%s} [ %s ]: "%s" %s [ %d ]',
 			get_class($e), $e->getCode(), strip_tags($e->getMessage()), $e->getFile(), $e->getLine());
 	}
+    
+    /**
+     * Метод для отримання коду помилки
+     * @return int код помилки
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
     
     /**
      * Метод для запису змісту помилки в логи сайту

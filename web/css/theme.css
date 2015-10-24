@@ -7,6 +7,12 @@ body {
     width: 50%;
     margin: 0 auto;
 }
+
+.error-image {
+    display:block; 
+    margin:0 auto;
+}
+
 .theme-dropdown .dropdown-menu {
     position: static;
     display: block;

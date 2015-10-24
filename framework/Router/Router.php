@@ -58,7 +58,7 @@ class Router
                 return $routes;
 
             } else { 
-                throw new RouteException('Not found');
+                throw new RouteException('Request '. $this->request->getBaseUrl() . $this->request->getPathInfo() .' is bad Request', 400);
             }
         } else {
             throw new RouteException();
